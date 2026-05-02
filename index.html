@@ -1,12 +1,20 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>payxrpl</title>
-    <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
-  </head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayXRPL</title>
+  
+  <!-- Xumm CDN -->
+  <script src="https://xumm.app/assets/cdn/xumm.min.js"></script>
+  
+  <!-- WICHTIG: CSP für Xumm + eval -->
+  <meta http-equiv="Content-Security-Policy" 
+        content="default-src 'self'; 
+                 script-src 'self' 'unsafe-eval' https://xumm.app https://*.vercel.app; 
+                 style-src 'self' 'unsafe-inline'; 
+                 connect-src 'self' https://*.xrpl.org https://testnet.xrpl.org https://api.xrpl.org;">
+</head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

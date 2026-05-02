@@ -16,7 +16,6 @@ export default function Dashboard({ xumm, network }: Props) {
     const fetchBalances = async () => {
       try {
         const account = xumm.account;
-        
         if (!account) {
           setError('Bitte Xaman Wallet verbinden');
           setLoading(false);
@@ -32,13 +31,12 @@ export default function Dashboard({ xumm, network }: Props) {
         const res = await fetch(`${baseUrl}/v2/accounts/${account}`);
         const data = await res.json();
 
-        if (data.account_data?.Balance) {
-          const xrp = (parseInt(data.account_data.Balance) / 1000000).toFixed(2);
-          setBalanceXRP(xrp);
-        }
+        const xrp = data.account_data?.Balance 
+          ? (parseInt(data.account_data.Balance) / 1000000).toFixed(2) 
+          : '0.00';
 
-        // RLUSD wird später genauer (über Trust Lines)
-        setBalanceRLUSD('0.00');
+        setBalanceXRP(xrp);
+        setBalanceRLUSD('0.00'); // RLUSD-Balance später genauer
 
       } catch (e) {
         console.error(e);
@@ -56,11 +54,11 @@ export default function Dashboard({ xumm, network }: Props) {
       <h2 className="text-4xl font-semibold text-center">Dein Wallet</h2>
 
       <div className="bg-white/10 rounded-3xl p-8 text-center">
-        {loading && <p className="text-white/70">Saldo wird geladen...</p>}
-        
-        {error && <p className="text-red-400">{error}</p>}
-        
-        {!loading && !error && (
+        {loading ? (
+          <p className="text-white/70">Saldo wird geladen...</p>
+        ) : error ? (
+          <p className="text-yellow-400">{error}</p>
+        ) : (
           <>
             <div className="text-6xl font-bold text-[#00FFAA]">{balanceXRP} XRP</div>
             <div className="text-2xl text-white/70 mt-2">{balanceRLUSD} RLUSD</div>
@@ -68,7 +66,7 @@ export default function Dashboard({ xumm, network }: Props) {
         )}
       </div>
 
-      <TrustSetButton xumm={xumm} network={network} />
+      {!error && <TrustSetButton xumm={xumm} network={network} />}
     </div>
   );
 }
