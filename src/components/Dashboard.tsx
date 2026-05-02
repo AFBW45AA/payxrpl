@@ -7,27 +7,33 @@ interface Props {
 }
 
 export default function Dashboard({ xumm, network }: Props) {
-  const [balanceXRP, setBalanceXRP] = useState<string>('0');
-  const [balanceRLUSD, setBalanceRLUSD] = useState<string>('0');
+  const [balanceXRP, setBalanceXRP] = useState<string>('0.00');
+  const [balanceRLUSD, setBalanceRLUSD] = useState<string>('0.00');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBalances = async () => {
       try {
-        const account = xumm.account; // Xumm gibt die aktuelle Adresse zurück
+        const account = xumm.account;
         if (!account) return;
 
-        // Einfache Abfrage über Xumm (funktioniert mit CDN)
-        const response = await fetch(`https://api.xrpl.org/v2/accounts/${account}/balances?network=${network.toLowerCase()}`);
-        const data = await response.json();
+        const baseUrl = network === 'TESTNET' 
+          ? 'https://testnet.xrpl.org' 
+          : 'https://xrpl.org';
 
-        const xrpBal = data.balances?.find((b: any) => b.currency === 'XRP')?.value || '0';
-        const rlusdBal = data.balances?.find((b: any) => b.currency === 'USD')?.value || '0';
+        const res = await fetch(`${baseUrl}/v2/accounts/${account}`);
+        const data = await res.json();
 
-        setBalanceXRP(parseFloat(xrpBal).toFixed(2));
-        setBalanceRLUSD(parseFloat(rlusdBal).toFixed(2));
+        // XRP Balance (in Drops → XRP umrechnen)
+        const xrpBalance = data.account_data?.Balance 
+          ? (parseInt(data.account_data.Balance) / 1000000).toFixed(2) 
+          : '0.00';
+
+        setBalanceXRP(xrpBalance);
+        setBalanceRLUSD('0.00'); // RLUSD-Balance wird später genauer (TrustLine nötig)
+
       } catch (e) {
-        console.error('Saldo konnte nicht geladen werden');
+        console.error('Saldo konnte nicht geladen werden', e);
       } finally {
         setLoading(false);
       }
@@ -51,19 +57,7 @@ export default function Dashboard({ xumm, network }: Props) {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <button className="bg-white/10 hover:bg-white/20 p-6 rounded-3xl text-left">
-          <div className="text-sm text-white/70">Letzte Transaktion</div>
-          <div className="text-lg">Noch keine</div>
-        </button>
-        <button className="bg-white/10 hover:bg-white/20 p-6 rounded-3xl text-left">
-          <div className="text-sm text-white/70">Offene Escrows</div>
-          <div className="text-lg">0</div>
-        </button>
-      </div>
-            <div className="mt-8">
-        <TrustSetButton xumm={xumm} network={network} />
-      </div>    
+      <TrustSetButton xumm={xumm} network={network} />
     </div>
   );
 }
