@@ -9,18 +9,18 @@ interface Props {
 export default function Dashboard({ xumm, network }: Props) {
   const [balanceXRP, setBalanceXRP] = useState<string>('0.00');
   const [balanceRLUSD, setBalanceRLUSD] = useState<string>('0.00');
-  const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const connectWallet = async () => {
     try {
-      const response = await xumm.authorize();   // Öffnet Xaman und verbindet
-      if (response.account) {
+      const response = await xumm.authorize();
+      if (response && response.account) {
         setAccount(response.account);
-        fetchBalances(response.account);
+        await fetchBalances(response.account);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Verbindungsfehler', e);
     }
   };
 
@@ -35,7 +35,7 @@ export default function Dashboard({ xumm, network }: Props) {
         : '0.00';
 
       setBalanceXRP(xrp);
-      setBalanceRLUSD('0.00');
+      setBalanceRLUSD('0.00'); // RLUSD später
     } catch (e) {
       console.error(e);
     } finally {
@@ -43,6 +43,7 @@ export default function Dashboard({ xumm, network }: Props) {
     }
   };
 
+  // Automatisch prüfen, ob schon verbunden
   useEffect(() => {
     if (xumm && xumm.account) {
       setAccount(xumm.account);
@@ -50,7 +51,7 @@ export default function Dashboard({ xumm, network }: Props) {
     } else {
       setLoading(false);
     }
-  }, [xumm, network]);
+  }, [xumm]);
 
   return (
     <div className="space-y-8">
@@ -61,10 +62,10 @@ export default function Dashboard({ xumm, network }: Props) {
           <p className="text-white/70">Verbindung wird geprüft...</p>
         ) : !account ? (
           <div>
-            <p className="text-yellow-400 text-xl mb-4">Bitte Xaman Wallet verbinden</p>
+            <p className="text-yellow-400 text-xl mb-6">Bitte Xaman Wallet verbinden</p>
             <button 
               onClick={connectWallet}
-              className="bg-[#00FFAA] text-black font-bold px-10 py-4 rounded-3xl text-xl hover:bg-[#00CC88]"
+              className="bg-[#00FFAA] hover:bg-[#00CC88] text-black font-bold px-12 py-5 rounded-3xl text-2xl transition"
             >
               Mit Xaman verbinden
             </button>
@@ -72,8 +73,8 @@ export default function Dashboard({ xumm, network }: Props) {
         ) : (
           <>
             <div className="text-6xl font-bold text-[#00FFAA]">{balanceXRP} XRP</div>
-            <div className="text-2xl text-white/70 mt-2">{balanceRLUSD} RLUSD</div>
-            <p className="text-xs text-white/50 mt-6">Verbunden: {account.substring(0, 8)}...{account.substring(account.length - 8)}</p>
+            <div className="text-2xl text-white/70 mt-3">{balanceRLUSD} RLUSD</div>
+            <p className="text-xs text-white/50 mt-8">Verbunden: {account.substring(0, 8)}...{account.substring(account.length - 8)}</p>
           </>
         )}
       </div>
