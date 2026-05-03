@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     if ((window as any).Xumm) {
-      const instance = new (window as any).Xumm('DEIN_API_KEY_HIER');   // ← Dein echter Key hier!
+      const instance = new (window as any).Xumm('810a7b17-2b86-4665-92e8-ba89fc6fcbf5');   // ← Dein echter Key hier!
       setXumm(instance);
     }
   }, []);
@@ -44,7 +44,7 @@ function App() {
         {page === 'escrow' && <EscrowForm xumm={xumm} network={network} />}
         {page === 'history' && <History />}
       </main>
-      
+
       <footer className="text-center text-xs text-white/40 py-6">
         Testnet • XRPL + RLUSD • Gebühr ≈ 0,00001 $
       </footer>
