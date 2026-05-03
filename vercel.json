@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' https://xumm.app https://*.vercel.app; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.xrpl.org https://testnet.xrpl.org https://api.xrpl.org https://xumm.app; img-src 'self' data:;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-eval' https://xumm.app https://*.vercel.app; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.xrpl.org https://testnet.xrpl.org https://api.xrpl.org https://*.xumm.app https://oauth2.xumm.app; img-src 'self' data:;"
         }
       ]
     }
